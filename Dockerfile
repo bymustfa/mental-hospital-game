@@ -1,20 +1,21 @@
-FROM node:22 AS builder
+# syntax=docker/dockerfile:1
+
+# ---- Build stage ----
+FROM node:22-alpine AS builder
 
 WORKDIR /usr/src/app
 
-ENV TZ=Europe/Istanbul
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
-COPY package.json package-lock.yaml ./
-
-RUN corepack enable pnpm
-RUN npm install --frozen-lockfile
+COPY package.json package-lock.json ./
+RUN npm ci
 
 COPY . .
+RUN npm run build
 
-ENV NODE_ENV=production
+# ---- Runtime stage ----
+FROM nginx:alpine
 
-RUN pnpm build
+COPY --from=builder /usr/src/app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 3000
-CMD ["npm", "run", "start"]
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
