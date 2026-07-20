@@ -15,9 +15,12 @@ export interface Profile {
 
 export type Decision = 'discharge' | 'admit';
 
+export type QuestionDomain = 'psychosis' | 'risk' | 'mood' | 'anxiety' | 'general';
+
 export interface Question {
   id: string;
   text: string;
+  domain: QuestionDomain;
 }
 
 export interface QaPair {

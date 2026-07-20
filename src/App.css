@@ -335,6 +335,10 @@ body {
 
 .question-btn {
   text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
   border: 1px solid var(--border);
   background: var(--panel-2);
   color: var(--text);
@@ -353,6 +357,27 @@ body {
 .question-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.question-text {
+  flex: 1;
+}
+
+.cost-badge {
+  flex-shrink: 0;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 16%, transparent);
+  white-space: nowrap;
+}
+
+.cost-badge.unaffordable {
+  color: var(--bad);
+  background: color-mix(in srgb, var(--bad) 16%, transparent);
 }
 
 .decision-bar {
@@ -414,6 +439,11 @@ body {
 .reward-preview .rp.bad {
   color: var(--bad, #ff6b6b);
   background: color-mix(in srgb, var(--bad, #ff6b6b) 14%, transparent);
+}
+
+.reward-preview .rp.info {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
 }
 
 .overlay {
