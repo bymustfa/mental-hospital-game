@@ -1,13 +1,24 @@
-import type { Decision, Profile, Outcome, GameEvent } from '../types';
+import type { Decision, Profile, Outcome, GameEvent, Question, QuestionDomain } from '../types';
 
 export const TARGET = 1_000_000;
 export const START_MONEY = 50;
 export const BANKRUPTCY = -5_000;
 export const START_ENERGY = 10;
-export const ENERGY_COST_PER_QUESTION = 1;
 export const ENERGY_REWARD_CORRECT = 3;
 export const ENERGY_PURCHASE_AMOUNT = 4;
 export const ENERGY_PURCHASE_COST = 200;
+
+export const PRESTIGE_COST_BY_DOMAIN: Record<QuestionDomain, number> = {
+  psychosis: 3,
+  risk: 3,
+  mood: 2,
+  anxiety: 2,
+  general: 1,
+};
+
+export function prestigeCostOf(q: Question): number {
+  return PRESTIGE_COST_BY_DOMAIN[q.domain];
+}
 
 export const SCORING = {
   correctDischarge: 200,

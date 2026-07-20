@@ -20,9 +20,9 @@ import {
   applyEvent,
   checkEndState,
   evaluateDecision,
+  prestigeCostOf,
   START_MONEY,
   START_ENERGY,
-  ENERGY_COST_PER_QUESTION,
   ENERGY_PURCHASE_AMOUNT,
   ENERGY_PURCHASE_COST,
 } from '../logic/scoring';
@@ -128,7 +128,7 @@ function reducer(state: State, action: Action): State {
           : [];
       return {
         ...state,
-        energy: state.energy - ENERGY_COST_PER_QUESTION,
+        energy: state.energy - prestigeCostOf(q),
         session: {
           ...state.session,
           pool,

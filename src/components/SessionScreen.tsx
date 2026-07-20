@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useGame } from '../state/GameContext';
 import { CONFIG } from '../state/config';
-import { sessionPreview } from '../logic/scoring';
+import { sessionPreview, prestigeCostOf } from '../logic/scoring';
 import { useGsapEnter } from '../anim/useGsap';
 import { gsap } from 'gsap';
 
@@ -19,6 +19,10 @@ export default function SessionScreen() {
   const maxReached = session ? session.asked.length >= session.maxQuestions : false;
   const noQuestionsLeft = session ? session.pool.length === 0 : false;
   const noEnergy = state.energy <= 0;
+  const cheapestCost = session
+    ? session.pool.reduce((min, q) => Math.min(min, prestigeCostOf(q)), Infinity)
+    : Infinity;
+  const allUnaffordable = !noEnergy && state.energy < cheapestCost;
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -85,16 +89,26 @@ export default function SessionScreen() {
         {noEnergy && !maxReached && (
           <div className="typing warn">Prestijin bitti! Karar vermen ya da prestij alman gerekiyor.</div>
         )}
-        {session.pool.map((q) => (
-          <button
-            key={q.id}
-            className="question-btn"
-            disabled={maxReached || noEnergy}
-            onClick={() => ask(q.id)}
-          >
-            {q.text}
-          </button>
-        ))}
+        {allUnaffordable && !maxReached && (
+          <div className="typing warn">Kalan prestijle sorulabilecek soru kalmadı. Karar vermen gerekiyor.</div>
+        )}
+        {session.pool.map((q) => {
+          const cost = prestigeCostOf(q);
+          const tooExpensive = state.energy < cost;
+          return (
+            <button
+              key={q.id}
+              className="question-btn"
+              disabled={maxReached || noEnergy || tooExpensive}
+              onClick={() => ask(q.id)}
+            >
+              <span className="question-text">{q.text}</span>
+              <span className={`cost-badge${tooExpensive ? ' unaffordable' : ''}`}>
+                −{cost} Prestij
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       <div className="reward-preview">
@@ -104,6 +118,10 @@ export default function SessionScreen() {
         </span>
         <span className="rp bad">
           ✗ Yanlış karar: −{preview.wrongMin}~−{preview.wrongMax} ₺
+        </span>
+        <span className="rp info">
+          Kalan prestij: {state.energy}
+          {!maxReached && Number.isFinite(cheapestCost) ? ` · En ucuz soru: −${cheapestCost}` : ''}
         </span>
       </div>
 
